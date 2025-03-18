@@ -1,16 +1,42 @@
-# local_captioning_app.py
 import streamlit as st
-import cv2
-import torch
 import numpy as np
 import base64
 import os
 import io
 import time
-from PIL import Image
-from gtts import gTTS
 import tempfile
-from transformers import pipeline
+
+# Try importing OpenCV with error handling
+try:
+    import cv2
+except ImportError:
+    st.error("Failed to import OpenCV (cv2). Please make sure 'opencv-python-headless' is installed.")
+    st.info("Run: pip install opencv-python-headless")
+    cv2 = None
+
+# Try importing PIL with error handling
+try:
+    from PIL import Image
+except ImportError:
+    st.error("Failed to import PIL. Please make sure 'Pillow' is installed.")
+    st.info("Run: pip install Pillow")
+    Image = None
+
+# Try importing gTTS with error handling
+try:
+    from gtts import gTTS
+except ImportError:
+    st.error("Failed to import gTTS. Please make sure 'gTTS' is installed.")
+    st.info("Run: pip install gTTS")
+    gTTS = None
+
+# Try importing transformers with error handling
+try:
+    from transformers import pipeline
+except ImportError:
+    st.error("Failed to import transformers. Please make sure 'transformers' is installed.")
+    st.info("Run: pip install transformers torch")
+    pipeline = None
 
 # Setup page
 st.set_page_config(
@@ -22,6 +48,9 @@ st.set_page_config(
 # Initialize image captioning model (load once at startup)
 @st.cache_resource
 def load_image_captioning_model():
+    if pipeline is None:
+        return None
+    
     try:
         captioner = pipeline("image-to-text", model="Salesforce/blip-image-captioning-base")
         return captioner
@@ -58,6 +87,10 @@ def text_to_speech(text):
     """
     Convert text to speech using Google's TTS
     """
+    if gTTS is None:
+        st.error("gTTS module not available. Cannot convert text to speech.")
+        return None
+    
     try:
         tts = gTTS(text=text, lang='en', slow=False)
         
@@ -86,6 +119,12 @@ def autoplay_audio(file_path):
         st.markdown(md, unsafe_allow_html=True)
 
 def main():
+    # Check if required modules are available
+    if cv2 is None or Image is None or gTTS is None or pipeline is None:
+        st.error("Some required modules are missing. Please install all dependencies:")
+        st.code("pip install streamlit opencv-python-headless torch Pillow gTTS transformers")
+        return
+    
     st.title("Local Vision Assistant")
     st.subheader("Offline Image Captioning for the Visually Impaired")
     
