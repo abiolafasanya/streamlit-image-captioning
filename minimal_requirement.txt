@@ -1,0 +1,7 @@
+streamlit
+opencv-python-headless
+numpy
+Pillow
+gTTS
+transformers
+protobuf<4.0.0
