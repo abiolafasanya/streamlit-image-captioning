@@ -1,4 +1,13 @@
 import streamlit as st
+
+# Setup page - MUST come before any other Streamlit commands
+st.set_page_config(
+    page_title="Local Image Captioning for the Visually Impaired",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+# Now import the rest of the libraries
 import numpy as np
 import base64
 import os
@@ -37,13 +46,6 @@ except ImportError:
     st.error("Failed to import transformers. Please make sure 'transformers' is installed.")
     st.info("Run: pip install transformers torch")
     pipeline = None
-
-# Setup page
-st.set_page_config(
-    page_title="Local Image Captioning for the Visually Impaired",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
 
 # Initialize image captioning model (load once at startup)
 @st.cache_resource
